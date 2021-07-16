@@ -277,6 +277,11 @@ pub fn generate_callbacks(
         writeln!(w, "// Callbacks")?;
     }
     for func in callbacks {
+        let full_name = format!("{}.{}", env.namespaces.main().name, func.name);
+        let config = env.config.objects.get(&full_name);
+        if let Some(false) = config.map(|c| c.status.need_generate()) {
+            continue;
+        }
         let (commented, sig) = function_signature(env, func, true);
         let comment = if commented { "//" } else { "" };
         writeln!(
